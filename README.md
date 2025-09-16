@@ -1,0 +1,2 @@
+# pecunia
+Personal Finance Manager
