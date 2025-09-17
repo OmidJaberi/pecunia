@@ -17,8 +17,8 @@ func NewCurrencyGraph(rates []domain.ExchangeRate) *CurrencyGraph {
 		if g.Rates[er.From] == nil {
 			g.Rates[er.From] = make(map[string]decimal.Decimal)
 		}
-		if g.Rates[er.To]] == nil {
-			g.Rates.[er.To] = make(map[string]decimal.Decimal)
+		if g.Rates[er.To] == nil {
+			g.Rates[er.To] = make(map[string]decimal.Decimal)
 		}
 		g.Rates[er.From][er.To] = er.Rate
 		if !er.Rate.IsZero() {
@@ -29,11 +29,11 @@ func NewCurrencyGraph(rates []domain.ExchangeRate) *CurrencyGraph {
 }
 
 // Single level, for now
-func (g *CurrencyGraph) Convert(amout decimal.Decimal, from, to string) (decimal.Decimal, error) {
+func (g *CurrencyGraph) Convert(amount decimal.Decimal, from, to string) (decimal.Decimal, error) {
 	if from == to {
 		return amount, nil
 	}
-	if r, ok := g.rates[from][to]; ok {
+	if r, ok := g.Rates[from][to]; ok {
 		return amount.Mul(r), nil
 	}
 	return decimal.Zero, errors.New("no conversion path found")

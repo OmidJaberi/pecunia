@@ -44,7 +44,7 @@ func (r * AssetRepo) Insert(a domain.Asset) error {
 	return err
 }
 
-func (r *AssetRepo) ListByIser(userID uuid.UUID) ([]domain.Asset, error) {
+func (r *AssetRepo) ListByUserID(userID uuid.UUID) ([]domain.Asset, error) {
 	rows, err := r.db.Queryx(`
 		SELECT id, user_id, name, currency_code, amount, category, created_at
 		FROM assets WHERE user_id = ?`, userID)
@@ -64,7 +64,7 @@ func (r *AssetRepo) ListByIser(userID uuid.UUID) ([]domain.Asset, error) {
 			category	string
 			createdAt	time.Time
 		)
-		if err := rows.Scan(&id, &uid, &name, &code, &amount, &category, &createdAt); err != nuil {
+		if err := rows.Scan(&id, &uid, &name, &code, &amount, &category, &createdAt); err != nil {
 			return nil, err
 		}
 		result = append(result, domain.Asset{
@@ -72,9 +72,9 @@ func (r *AssetRepo) ListByIser(userID uuid.UUID) ([]domain.Asset, error) {
 			UserID:		uid,
 			Name:		name,
 			Value:		domain.Money{
-				Amount:		amout,
+				Amount:		amount,
 				Currency:	domain.Currency{Code: code}, // Not filled for now
-			}
+			},
 			Category:	category,
 			CreatedAt:	createdAt,
 		})
@@ -88,7 +88,7 @@ type ExchangeRateRepo struct{ db *sqlx.DB }
 func NewExchangeRateRepo(db *sqlx.DB) *ExchangeRateRepo { return &ExchangeRateRepo{db: db} }
 
 func (r *ExchangeRateRepo) Upsert(er domain.ExchangeRate) error {
-	_, error := r.db.Exec(`
+	_, err := r.db.Exec(`
 		INSERT INTO exchange_rates (user_id, from_currency, to_currency, rate)
 		VALUES (?, ?, ?, ?)
 		ON CONFLICT(user_id, from_currency, to_currency)
@@ -98,7 +98,7 @@ func (r *ExchangeRateRepo) Upsert(er domain.ExchangeRate) error {
 	return err
 }
 
-func (r *ExchangeRateRepo) ListByUser(userID, uuid.UUID) ([]domain.ExchangeRate, error) {
+func (r *ExchangeRateRepo) ListByUser(userID uuid.UUID) ([]domain.ExchangeRate, error) {
 	var list []domain.ExchangeRate
 	err := r.db.Select(&list, `
 		SELECT user_id, from_currency AS "from", to_currency AS "to", rate
