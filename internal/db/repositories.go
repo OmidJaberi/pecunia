@@ -101,7 +101,7 @@ func (r *ExchangeRateRepo) Upsert(er domain.ExchangeRate) error {
 func (r *ExchangeRateRepo) ListByUser(userID uuid.UUID) ([]domain.ExchangeRate, error) {
 	var list []domain.ExchangeRate
 	err := r.db.Select(&list, `
-		SELECT user_id, from_currency AS "from", to_currency AS "to", rate
+		SELECT user_id AS "userid", from_currency AS "from", to_currency AS "to", rate
 		FROM exchange_rates WHERE user_id = ?`, userID)
 	return list, err
 }
