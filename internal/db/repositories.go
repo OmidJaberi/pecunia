@@ -39,7 +39,7 @@ func (r * AssetRepo) Insert(a domain.Asset) error {
 	_, err := r.db.Exec(`
 		INSERT INTO assets (id, user_id, name, currency_code, amount, category, created_at)
 		VALUES (?, ?, ?, ?, ?, ?, ?)`,
-		a.ID, a.UserID, a.Name, a.Value.Currency.Code, a.Value.Amount, a.Category, a.CreatedAt,
+		a.ID, a.UserID, a.Name, a.Value.Currency.Code, a.Value.Amount, a.Category, a.CreatedAt.Unix(),
 	)
 	return err
 }
@@ -62,7 +62,7 @@ func (r *AssetRepo) ListByUserID(userID uuid.UUID) ([]domain.Asset, error) {
 			code		string
 			amount		decimal.Decimal
 			category	string
-			createdAt	time.Time
+			createdAt	int64
 		)
 		if err := rows.Scan(&id, &uid, &name, &code, &amount, &category, &createdAt); err != nil {
 			return nil, err
@@ -76,7 +76,7 @@ func (r *AssetRepo) ListByUserID(userID uuid.UUID) ([]domain.Asset, error) {
 				Currency:	domain.Currency{Code: code}, // Not filled for now
 			},
 			Category:	category,
-			CreatedAt:	createdAt,
+			CreatedAt:	time.Unix(createdAt, 0),
 		})
 	}
 	return result, nil

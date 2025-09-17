@@ -2,7 +2,7 @@
 CREATE TABLE users (
     id UUID PRIMARY KEY,
     name TEXT NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+    created_at INTEGER NOT NULL
 );
 
 -- currencies (global)
@@ -21,7 +21,7 @@ CREATE TABLE assets (
     currency_code TEXT REFERENCES currencies(code),
     amount NUMERIC(30,10) NOT NULL,
     category TEXT NOT NULL CHECK (category IN ('investment','income','loan','spending')),
-    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+    created_at INTEGER NOT NULL
 );
 
 -- transactions
@@ -34,7 +34,7 @@ CREATE TABLE transactions (
     frequency TEXT NOT NULL CHECK (frequency IN ('once','monthly','weekly','yearly')),
     start_date DATE NOT NULL,
     end_date DATE,
-    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+    created_at INTEGER NOT NULL
 );
 
 -- exchange rates
