@@ -33,6 +33,7 @@ func main() {
 	userID := uuid.New()
 
 	// Seed exchange rates
+	rates.Upsert(domain.ExchangeRate{UserID: userID, From: "IRT", To: "IRR", Rate: decimal.NewFromInt(10)})
 	rates.Upsert(domain.ExchangeRate{UserID: userID, From: "USD", To: "IRR", Rate: decimal.NewFromInt(990000)})
 	rates.Upsert(domain.ExchangeRate{UserID: userID, From: "BTC", To: "USD", Rate: decimal.NewFromInt(60000)})
 	rates.Upsert(domain.ExchangeRate{UserID: userID, From: "CNY", To: "USD", Rate: decimal.NewFromInt(7)})
@@ -52,10 +53,22 @@ func main() {
 	assets.Insert(domain.Asset{
 		ID:			uuid.New(),
 		UserID:		userID,
-		Name:		"Cash",
+		Name:		"US_Cash",
 		Value:		domain.Money{
 			Amount:		decimal.NewFromFloat(753),
 			Currency:	domain.Currency{Code: "USD"},
+		},
+		Category:	"investment",
+		CreatedAt:	time.Now(),
+	})
+
+	assets.Insert(domain.Asset{
+		ID:			uuid.New(),
+		UserID:		userID,
+		Name:		"IR_Cash",
+		Value:		domain.Money{
+			Amount:		decimal.NewFromFloat(1e9),
+			Currency:	domain.Currency{Code: "IRT"},
 		},
 		Category:	"investment",
 		CreatedAt:	time.Now(),
@@ -82,6 +95,7 @@ func main() {
 func seedCurrencies(repo *db.CurrencyRepo) {
 	defaults := []domain.Currency{
 		{Code: "USD", Name: "US Dollar", Symbol: "$", Decimals: 2},
+		{Code: "IRT", Name: "Iranian Toman", Symbol: "T", Decimals: 1},
 		{Code: "IRR", Name: "Iranian Rial", Symbol: "﷼", Decimals: 0},
 		{Code: "CNY", Name: "US Dollar", Symbol: "¥", Decimals: 2},
 		{Code: "BTC", Name: "Bitcoin", Symbol: "B", Decimals: 8},
