@@ -1,14 +1,40 @@
 package db
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/shopspring/decimal"
-	
+
 	"github.com/OmidJaberi/pecunia/internal/domain"
 )
+
+// UserRepo
+type UserRepo struct{ db *sqlx.DB }
+
+func NewUserRepo(db *sqlx.DB) *UserRepo { return &UserRepo{db: db} }
+
+func (r *UserRepo) Create(u *domain.User) error {
+	_, err := r.db.Exec(`
+		INSERT INTO users (id, name, created_at) VALUES (?, ?, ?)`,
+		u.ID.String(), u.Name, u.CreatedAt.Unix())
+	return err
+}
+
+func (r *UserRepo) GetByID(id uuid.UUID) (*domain.User, error) {
+	var u domain.User
+	var createdAt int64
+	err := r.db.QueryRowx(`SELECT id, name, created_at FROM users WHERE id = ?`, id.String()).Scan(&u.ID, &u.Name, &createdAt)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &u, nil
+}
 
 // CurrencyRepo
 type CurrencyRepo struct { db *sqlx.DB  }
@@ -35,7 +61,7 @@ type AssetRepo struct { db *sqlx.DB  }
 
 func NewAssetRepo(db *sqlx.DB) *AssetRepo { return &AssetRepo{db: db} }
 
-func (r * AssetRepo) Insert(a domain.Asset) error {
+func (r *AssetRepo) Insert(a domain.Asset) error {
 	_, err := r.db.Exec(`
 		INSERT INTO assets (id, user_id, name, currency_code, amount, category, created_at)
 		VALUES (?, ?, ?, ?, ?, ?, ?)`,
