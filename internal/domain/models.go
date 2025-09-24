@@ -28,6 +28,12 @@ type Asset struct {
 	CreatedAt	time.Time
 }
 
+type User struct {
+	ID			uuid.UUID
+	Name		string
+	CreatedAt	time.Time
+}
+
 type Transaction struct {
 	ID			uuid.UUID
 	UserID		uuid.UUID
