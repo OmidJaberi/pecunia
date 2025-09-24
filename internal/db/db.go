@@ -13,6 +13,12 @@ func Connect(path string) *sqlx.DB {
 	if err != nil {
 		log.Fatalf("failed to connect to db: %v", err)
 	}
+
+	_, err = db.Exec("PRAGMA foreign_keys = ON;")
+	if err != nil {
+		log.Fatalf("Failed to turn on foreign keys", err)
+	}
+
 	return db
 }
 
